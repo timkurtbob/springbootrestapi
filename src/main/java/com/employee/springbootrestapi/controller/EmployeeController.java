@@ -1,6 +1,7 @@
 package com.employee.springbootrestapi.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -26,7 +27,7 @@ public class EmployeeController {
 	EmployeeDAO employeeDAO;
 	
 	
-	/* to save an employee*/
+	/* to save an employee */
 	@PostMapping("/employees")
 	public Employee createEmployee(@Valid @RequestBody Employee emp) {
 		return employeeDAO.save(emp);
@@ -44,43 +45,43 @@ public class EmployeeController {
 	@GetMapping("/employees/{id}")
 	public ResponseEntity<Employee> getEmployeeById(@PathVariable(value="id") Long empid){
 		
-		Employee emp=employeeDAO.findOne(empid);
+		Optional<Employee> emp=employeeDAO.findOne(empid);
 		
-		if(emp==null) {
+		if(!emp.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok().body(emp);
+		return ResponseEntity.ok().body(emp.get());
 		
 	}
 	
 	
-	/*update an employee by empid*/
+	/* update an employee by empid */
 	@PutMapping("/employees/{id}")
 	public ResponseEntity<Employee> updateEmployee(@PathVariable(value="id") Long empid,@Valid @RequestBody Employee empDetails){
 		
-		Employee emp=employeeDAO.findOne(empid);
-		if(emp==null) {
+		Optional<Employee> emp=employeeDAO.findOne(empid);
+		if(!emp.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
 		
-		emp.setFirstName(empDetails.getFirstName());
-		emp.setSurname(empDetails.getSurname());
-		emp.setJobTitle(empDetails.getJobTitle());
+		emp.get().setFirstName(empDetails.getFirstName());
+		emp.get().setSurname(empDetails.getSurname());
+		emp.get().setJobTitle(empDetails.getJobTitle());
 		
-		Employee updateEmployee=employeeDAO.save(emp);
+		Employee updateEmployee=employeeDAO.save(emp.get());
 		return ResponseEntity.ok().body(updateEmployee);
 	}
 	
 	
-	/*Delete an employee*/
+	/* delete an employee*/
 	@DeleteMapping("/employees/{id}")
 	public ResponseEntity<Employee> deleteEmployee(@PathVariable(value="id") Long empid) {
 		
-		Employee emp=employeeDAO.findOne(empid);
-		if(emp==null) {
+		Optional<Employee> emp=employeeDAO.findOne(empid);
+		if(!emp.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		employeeDAO.delete(emp);
+		employeeDAO.delete(emp.get());
 		
 		return ResponseEntity.ok().build();		
 	}
